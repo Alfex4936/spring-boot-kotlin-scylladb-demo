@@ -1,0 +1,72 @@
+version: "3"
+
+services:
+  spring-boot:
+    container_name: scylladb-spring-boot
+    build:
+      context: ./build/libs
+      dockerfile: Dockerfile.spring
+    depends_on:
+      scylla-node1:
+        condition: service_started
+      scylla-node2:
+        condition: service_started
+    ports:
+      - "8082:8082"
+    networks:
+      web:
+
+
+  scylla-node1:
+    container_name: scylla-node1
+    image: scylladb/scylla:5.4.0
+    restart: unless-stopped
+    command: --seeds=scylla-node1 --memory 1G --smp 1 --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+      - "./scylla/mutant-data.txt:/mutant-data.txt"
+    ports:
+      - "10000:10000"
+      - "9042:9042"
+      - "24:22"
+      - "7000:7000"
+      - "7001:7001"
+      - "9180:9180"
+      - "9160:9160"
+    networks:
+      web:
+
+  scylla-node2:
+    container_name: scylla-node2
+    image: scylladb/scylla:5.4.0
+    restart: unless-stopped
+    command: --seeds=scylla-node1 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+    ports:
+      - "9043:9042"
+    networks:
+      web:
+
+#  scylla-node3:
+#    container_name: scylla-node3
+#    image: scylladb/scylla:5.4.0
+#    restart: unless-stopped
+#    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 500M --overprovisioned 1 --api-address 0.0.0.0
+#    volumes:
+#      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+#      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+#    ports:
+#      - "9044:9042"
+#    networks:
+#      web:
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '0.5'
+
+networks:
+  web:
+    driver: bridge
