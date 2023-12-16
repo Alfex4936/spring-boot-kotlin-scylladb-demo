@@ -1,4 +1,4 @@
-package csw.scylladb.jwt.kotlintest.config
+package csw.scylladb.jwt.kotlintest.config.cassandra
 
 
 import com.datastax.oss.driver.api.core.CqlSession

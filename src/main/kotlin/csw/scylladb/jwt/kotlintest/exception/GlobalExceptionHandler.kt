@@ -11,7 +11,7 @@ class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDataIntegrityViolationException(ex: DataIntegrityViolationException): ResponseEntity<ErrorResponse> {
-        val errorResponse = ErrorResponse(errorMessage = ex.message ?: "Data integrity violation.")
+        val errorResponse = ErrorResponse(error = ex.message ?: "Data integrity violation.")
         return ResponseEntity
             .status(HttpStatus.BAD_REQUEST)
             .body(errorResponse)

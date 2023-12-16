@@ -1,37 +1,3 @@
-# ----------------------------------------------------------
-# Spring Boot Config
-# ----------------------------------------------------------
 spring:
-  application:
-    name: Scylla Spring Boot
-  main:
-    banner-mode: 'OFF'
-  reactor:
-    debug-agent:
-      enabled: true
-  cassandra:
-    schema-action: create_if_not_exists
-
-# The HTTP port that the REST controller will listen to.
-server:
-  port: 8082
-  address: 0.0.0.0
-  frontend: http://localhost:3000
-
-logging:
-  level:
-    #    root: debug
-    org.springframework.security.web.authentication.logout.LogoutFilter: ERROR
-    org:
-      springframework:
-
-        security: debug
-
-scylla:
-  contactPoints: scylla-node1,scylla-node2
-  #  port: 9042
-  localDC: datacenter1
-  username: cassandra
-  password: cassandra
-  keyspace: cswkotlin
-#  consistency: LOCAL_QUORUM
+  config:
+    import: application-secret.yml
