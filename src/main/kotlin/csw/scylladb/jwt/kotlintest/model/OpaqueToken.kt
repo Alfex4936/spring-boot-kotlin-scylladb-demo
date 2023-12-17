@@ -18,8 +18,7 @@ data class OpaqueToken(
     val username: String,
     val provider: String,
 
-    @field:Column("opaque_token")
-    var opaqueToken: String,
+    @field:Column("opaque_token") var opaqueToken: String,
 
     @field:Column("created_at") @CreatedDate val createdAt: Instant? = null,
 
@@ -28,4 +27,3 @@ data class OpaqueToken(
     @field:Column("expires_at") var expiresAt: Instant? = null,
 
     )
-{}

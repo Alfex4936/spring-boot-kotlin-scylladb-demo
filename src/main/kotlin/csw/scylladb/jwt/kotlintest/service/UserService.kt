@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service
 import java.util.*
 
 @Service
-class UserService(private val userRepository: UserRepository, private val bCryptPasswordEncoder: BCryptPasswordEncoder) {
+class UserService(
+    private val userRepository: UserRepository,
+    private val bCryptPasswordEncoder: BCryptPasswordEncoder
+) {
 
     fun saveUser(userDto: UserCreationDto): User {
         // Check if a user with the same email already exists
@@ -25,7 +28,7 @@ class UserService(private val userRepository: UserRepository, private val bCrypt
             phoneNumber = userDto.phoneNumber,
             provider = "website",
             permissions = setOf("ROLE_USER")
-            )
+        )
 
         user.markAsNew()
 
@@ -41,7 +44,6 @@ class UserService(private val userRepository: UserRepository, private val bCrypt
     }
 
     fun findById(id: UUID): Optional<User> {
-        print("AM i calling???")
         return userRepository.findById(id)
     }
 }

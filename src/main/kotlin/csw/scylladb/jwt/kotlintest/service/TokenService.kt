@@ -1,10 +1,10 @@
 package csw.scylladb.jwt.kotlintest.service
 
+import com.datastax.oss.driver.api.core.uuid.Uuids
 import csw.scylladb.jwt.kotlintest.model.OpaqueToken
 import csw.scylladb.jwt.kotlintest.repository.OpaqueTokenRepository
 import csw.scylladb.jwt.kotlintest.repository.UserRepository
 import io.jsonwebtoken.*
-import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken
@@ -27,21 +27,31 @@ class TokenService(
 
     fun saveOpaqueToken(username: String, provider: String, token: String) {
         val expirationDate = Instant.now().plus(OPAQUE_TOKEN_VALIDITY)
+        val ttl = calculateTTL(expirationDate)
 
         val userToken = opaqueTokenRepository.findByProviderAndUsername(provider, username)
-            ?.apply {
-                // If token exists, update it
-                this.opaqueToken = token
-                this.expiresAt = expirationDate
-            } ?: OpaqueToken(
-            // If token does not exist, create a new one
-            username = username,
-            provider = provider,
-            opaqueToken = token,
-            expiresAt = expirationDate
-        )
-
-        opaqueTokenRepository.save(userToken)
+        if (userToken != null) {
+            // If token exists, update it along with TTL
+            opaqueTokenRepository.updateToken(
+                userToken.id,
+                token,
+                Instant.now(),
+                expirationDate,
+                ttl
+            )
+        } else {
+            // If token does not exist, create a new one with TTL
+            opaqueTokenRepository.insertToken(
+                Uuids.timeBased(),
+                username,
+                provider,
+                token,
+                Instant.now(),
+                Instant.now(),
+                expirationDate,
+                ttl
+            )
+        }
     }
 
 
@@ -64,14 +74,20 @@ class TokenService(
         return OAuth2AuthenticationToken(user, user.getAuthorities(), provider)
     }
 
-    @Scheduled(fixedRate = 3600000) // 1 hour
-    fun cleanUpExpiredTokens() {
-        opaqueTokenRepository.deleteAllByExpiresAtBefore(Instant.now())
+    fun calculateTTL(expiresAt: Instant): Int {
+        val duration = Duration.between(Instant.now(), expiresAt)
+        return duration.seconds.toInt()
     }
 
+//    @Scheduled(fixedRate = 3600000) // 1 hour
+//    fun cleanUpExpiredTokens() {
+//        opaqueTokenRepository.deleteAllByExpiresAtBefore(Instant.now())
+//    }
+
     companion object {
-//        private val OPAQUE_TOKEN_VALIDITY: Duration = Duration.ofDays(1)
-        private val OPAQUE_TOKEN_VALIDITY: Duration = Duration.ofSeconds(60)
+        private val OPAQUE_TOKEN_VALIDITY: Duration = Duration.ofDays(1)
+
+        //        private val OPAQUE_TOKEN_VALIDITY: Duration = Duration.ofSeconds(60)
         private val secureRandom = SecureRandom() //thread-safe
         private val base64Encoder: Base64.Encoder = Base64.getUrlEncoder() //thread-safe
     }

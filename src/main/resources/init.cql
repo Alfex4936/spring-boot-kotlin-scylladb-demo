@@ -23,11 +23,11 @@ DROP TABLE IF EXISTS cswkotlin.opaque_tokens;
 
 CREATE TABLE IF NOT EXISTS cswkotlin.opaque_tokens
 (
-    id         uuid PRIMARY KEY,
-    username   text,
-    provider   text,
-    opaque_token    text,
-    created_at timestamp,
-    updated_at timestamp,
-    expires_at timestamp,
+    id           uuid PRIMARY KEY,
+    username     text,
+    provider     text,
+    opaque_token text,
+    created_at   timestamp,
+    updated_at   timestamp,
+    expires_at   timestamp,
 );

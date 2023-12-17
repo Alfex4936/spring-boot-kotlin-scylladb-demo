@@ -30,7 +30,7 @@ class ScyllaConfiguration {
     @Value("\${scylla.port:9042}")
     private val port: Int = 0
 
-    @Value("\${scylla.localdc}")
+    @Value("\${scylla.localDC}")
     private val localDc: String? = null
 
     @Value("\${scylla.keyspace}")

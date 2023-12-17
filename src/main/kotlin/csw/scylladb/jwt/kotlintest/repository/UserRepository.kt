@@ -1,7 +1,6 @@
 package csw.scylladb.jwt.kotlintest.repository
 
 import csw.scylladb.jwt.kotlintest.model.User
-import org.springframework.data.cassandra.repository.AllowFiltering
 import org.springframework.data.cassandra.repository.CassandraRepository
 import org.springframework.data.cassandra.repository.Query
 import org.springframework.data.repository.query.Param

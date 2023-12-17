@@ -4,7 +4,6 @@ import csw.scylladb.jwt.kotlintest.model.User
 import org.slf4j.LoggerFactory
 import org.springframework.core.env.Environment
 import java.util.*
-import kotlin.collections.HashMap
 
 data class OAuthAttributes(
     val attributes: Map<String, Any>,
@@ -17,7 +16,12 @@ data class OAuthAttributes(
     companion object {
         private val log = LoggerFactory.getLogger(OAuthAttributes::class.java)
 
-        fun of(registrationId: String, userNameAttributeName: String, attributes: Map<String, Any>, env: Environment): OAuthAttributes {
+        fun of(
+            registrationId: String,
+            userNameAttributeName: String,
+            attributes: Map<String, Any>,
+            env: Environment
+        ): OAuthAttributes {
             log.info("OF: {}", attributes)
 
             val providerPrefix = registrationId.lowercase(Locale.getDefault()) + "."
